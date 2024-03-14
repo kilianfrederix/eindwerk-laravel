@@ -14,26 +14,34 @@
 
                 <div class="flex flex-col">
                     <label class="text-gray-500" for="voornaam">Naam: *</label>
-                    <input name="name" value="" type="text" class="bg-white border border-gray-500 px-4 py-2">
-                    <p class="text-red-500">Dit is een foutmelding.</p>
+                    <input name="name" value="{{old('name')}}" type="text" class="bg-white border border-gray-500 px-4 py-2">
+                    @error('name')
+                        <p class="text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex flex-col">
                     <label class="text-gray-500" for="voornaam">E-mailadres: *</label>
-                    <input name="email" value="" type="email" class="bg-white border border-gray-500 px-4 py-2">
-                    <p class="text-red-500">Dit is een foutmelding.</p>
+                    <input name="email" value="{{old('email')}}" type="email" class="bg-white border border-gray-500 px-4 py-2">
+                    @error('email')
+                        <p class="text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex flex-col">
                     <label class="text-gray-500" for="voornaam">Wachtwoord: *</label>
                     <input name="password" type="password" class="bg-white border border-gray-500 px-4 py-2">
-                    <p class="text-red-500">Dit is een foutmelding.</p>
+                    @error('password')
+                        <p class="text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex flex-col">
                     <label class="text-gray-500" for="voornaam">Confirmeer wachtwoord: *</label>
                     <input name="password_confirmation" type="password" class="bg-white border border-gray-500 px-4 py-2">
-                    <p class="text-red-500">Dit is een foutmelding.</p>
+                    @error('password_confirmation')
+                        <p class="text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>

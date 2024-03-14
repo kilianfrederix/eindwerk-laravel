@@ -25,31 +25,29 @@ Route::get('/product/{product}', [StoreController::class, 'show'])->name('produc
 
 Route::get('/brands/{brand}', [BrandsController::class, 'show'])->name('brands.show');
 
-Route::get('/cart', [ShoppingCartController::class, 'index'])->name('cart');
-Route::post('/cart/{product}', [ShoppingCartController::class, 'add'])->name('cart.add');
-Route::put('/cart/{product}', [ShoppingCartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/{product}', [ShoppingCartController::class, 'delete'])->name('cart.delete');
-Route::get('/checkout', [OrdersController::class, 'checkout'])->name('checkout');
+Route::get('/cart', [ShoppingCartController::class, 'index'])->name('cart')->middleware('auth');
+Route::post('/cart/{product}', [ShoppingCartController::class, 'add'])->name('cart.add')->middleware('auth');
+Route::put('/cart/{product}', [ShoppingCartController::class, 'update'])->name('cart.update')->middleware('auth');
+Route::delete('/cart/{product}', [ShoppingCartController::class, 'delete'])->name('cart.delete')->middleware('auth');
+Route::get('/checkout', [OrdersController::class, 'checkout'])->name('checkout')->middleware('auth');
 
-Route::get('/discount/remove', [ShoppingCartController::class, 'removeDiscountCode'])->name('discount.remove');
-Route::post('/discount/set', [ShoppingCartController::class, 'setDiscountCode'])->name('discount.set');
+Route::get('/discount/remove', [ShoppingCartController::class, 'removeDiscountCode'])->name('discount.remove')->middleware('auth');
+Route::post('/discount/set', [ShoppingCartController::class, 'setDiscountCode'])->name('discount.set')->middleware('auth');
 
-Route::get('/orders', [OrdersController::class, 'index'])->name('orders.index');
-Route::post('/orders', [OrdersController::class, 'store'])->name('orders.store');
-Route::get('/orders/{order}', [OrdersController::class, 'show'])->name('orders.show');
+Route::get('/orders', [OrdersController::class, 'index'])->name('orders.index')->middleware('auth');
+Route::post('/orders', [OrdersController::class, 'store'])->name('orders.store')->middleware('auth');
+Route::get('/orders/{order}', [OrdersController::class, 'show'])->name('orders.show')->middleware('auth');
 
-Route::get('/favorites', [FavoritesController::class, 'favorites'])->name('favorites');
-Route::get('/favorites/{product}', [FavoritesController::class, 'toggleFavorite'])->name('favorites.toggle');
+Route::get('/favorites', [FavoritesController::class, 'favorites'])->name('favorites')->middleware('auth');
+Route::get('/favorites/{product}', [FavoritesController::class, 'toggleFavorite'])->name('favorites.toggle')->middleware('auth');
 
-Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::put('/profile/edit/email', [ProfileController::class, 'updateEmail'])->name('profile.update-email');
-Route::put('/profile/edit/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile')->middleware('auth');
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('auth');
+Route::put('/profile/edit/email', [ProfileController::class, 'updateEmail'])->name('profile.update-email')->middleware('auth');
+Route::put('/profile/edit/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password')->middleware('auth');
 
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/login', [AuthController::class, 'handleLogin'])->name('login.post');
-Route::get('/register', [AuthController::class, 'register'])->name('register');
-Route::post('/register', [AuthController::class, 'handleRegister'])->name('register.post');
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
-
+Route::get('/login', [AuthController::class, 'login'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'handleLogin'])->name('login.post')->middleware('guest');
+Route::get('/register', [AuthController::class, 'register'])->name('register')->middleware('guest');
+Route::post('/register', [AuthController::class, 'handleRegister'])->name('register.post')->middleware('guest');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
