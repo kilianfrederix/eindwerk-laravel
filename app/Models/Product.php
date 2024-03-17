@@ -17,7 +17,13 @@ class Product extends Model
         'available_sizes' => 'array',
     ];
 
-    public function brand() {
+    public function brand()
+    {
         return $this->belongsTo(Brand::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'product_id', 'user_id')->withTimestamps();
     }
 }

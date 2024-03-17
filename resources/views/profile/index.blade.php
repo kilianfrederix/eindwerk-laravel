@@ -24,7 +24,7 @@
             <div class="p-4 bg-gray-100 flex items-center justify-between relative">
                 <div>
                     <h1 class="text-4xl font-semibold mb-2">Favorieten</h1>
-                    <p class="text-gray-500">5 producten</p>
+                    <p class="text-gray-500">{{ Auth::user()->favorites()->count() }} producten</p>
                 </div>
                 <div class="text-4xl">
                     <i class="fa-solid fa-angle-right"></i>
