@@ -38,7 +38,9 @@
             <div class="p-4 bg-gray-100 flex items-center justify-between relative">
                 <div>
                     <h1 class="text-4xl font-semibold mb-2">Mijn bestellingen</h1>
-                    <p class="text-gray-500">{{ Auth::user()->cart()->count() }} bestellingen</p>
+                    <p class="text-gray-500">5 bestellingen</p>
+                    {{-- dit is de juiste manier maar heb de model en migration nog niet gedaan --}}
+                    {{-- {{ Auth::user()->orders()->count() }}  --}}
                 </div>
                 <div class="text-4xl">
                     <i class="fa-solid fa-angle-right"></i>
