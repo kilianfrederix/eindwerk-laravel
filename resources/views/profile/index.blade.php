@@ -6,7 +6,9 @@
     <div class="grid grid-cols-6 gap-24">
         <div class="col-span-2">
             <h1 class="text-4xl font-semibold mb-4">Mijn profiel</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum corporis perferendis reprehenderit alias eligendi laudantium quisquam magnam, totam vel nobis maxime nemo aliquid impedit ipsam repellendus autem eos doloribus iste.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum corporis perferendis reprehenderit alias
+                eligendi laudantium quisquam magnam, totam vel nobis maxime nemo aliquid impedit ipsam repellendus autem eos
+                doloribus iste.</p>
         </div>
         <div class="col-span-4 grid gap-4">
             <div class="p-4 bg-gray-100 flex items-center justify-between relative">
@@ -36,7 +38,7 @@
             <div class="p-4 bg-gray-100 flex items-center justify-between relative">
                 <div>
                     <h1 class="text-4xl font-semibold mb-2">Mijn bestellingen</h1>
-                    <p class="text-gray-500">5 bestellingen</p>
+                    <p class="text-gray-500">{{ Auth::user()->cart()->count() }} bestellingen</p>
                 </div>
                 <div class="text-4xl">
                     <i class="fa-solid fa-angle-right"></i>

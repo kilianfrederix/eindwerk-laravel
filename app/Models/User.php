@@ -48,4 +48,11 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Product::class, 'favorites', 'user_id', 'product_id')->withTimestamps();
     }
+
+    // function voor Winkelwagen
+    public function cart()
+    {
+        return $this->belongsToMany(Product::class, 'shopping_carts', 'user_id', 'product_id')
+            ->withPivot('quantity', 'size');
+    }
 }

@@ -22,8 +22,16 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
+    // function voor favorites
     public function users()
     {
         return $this->belongsToMany(User::class, 'favorites', 'product_id', 'user_id')->withTimestamps();
+    }
+
+    // function voor favorites
+    public function userscart()
+    {
+        return $this->belongsToMany(User::class, 'shopping_carts', 'product_id', 'user_id')
+            ->withPivot('quantity', 'size');
     }
 }
