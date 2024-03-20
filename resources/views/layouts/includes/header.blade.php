@@ -13,12 +13,17 @@
             </h1>
         </div>
         <div class="flex gap-4 text-xl items-center">
-            <a href="{{ route('profile') }}"><i class="fa-solid fa-user"></i></a>
-            <a href="{{ route('favorites') }}"><i class="fa-solid fa-heart"></i></a>
-            <a href="{{ route('cart') }}" class="bg-gray-200 px-4 py-1 rounded-full">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span>{{ Auth::user()->cart()->count() }} items</span>
-            </a>
+            @if(Auth::check())
+                <a href="{{ route('profile') }}"><i class="fa-solid fa-user"></i></a>
+                <a href="{{ route('favorites') }}"><i class="fa-solid fa-heart"></i></a>
+                <a href="{{ route('cart') }}" class="bg-gray-200 px-4 py-1 rounded-full">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>{{ Auth::user()->cart()->count() }} items</span>
+                </a>
+            @else
+                <a href="{{ route('login') }}">Login</a>
+            @endif
         </div>
     </div>
 </header>
+
