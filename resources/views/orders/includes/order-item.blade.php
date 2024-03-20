@@ -1,3 +1,7 @@
+@php
+    $totalPrice = $product->pivot->quantity * $product->price;
+    $totalPrice += 3.9;
+@endphp
 <div class="flex gap-4 border border-gray-200 p-4">
     <div class="w-24">
         <img src="{{ asset('images/'.$product->image) }}" alt="{{ $product->name }}">
@@ -8,11 +12,13 @@
         <h1 class="text-lg">
             <a href="{{ route('products.show', $product) }}" class="hover:underline">{{ $product->name }}</a>
         </h1>
-        <p class="text-sm text-gray-800">Maat: 38</p>
+        <p class="text-sm text-gray-800">Maat: {{ $product->pivot->size }}</p>
 
         <div class="text-right border-t border-gray-500 pt-2 mt-4 flex justify-between">
-            <span class="font-normal text-gray-500">2 &times &euro;{{ $product->price }}</span>
-            <span class="font-semibold">&euro;{{ $product->price * 2 }}</span>
+            <span class="font-normal text-gray-500">{{ $product->pivot->quantity }} &times; &euro;{{ $product->price }}</span>
+            <span class="font-semibold">&euro;{{ $totalPrice }}</span>
+
         </div>
     </div>
 </div>
+

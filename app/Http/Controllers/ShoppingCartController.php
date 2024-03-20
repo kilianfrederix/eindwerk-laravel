@@ -7,77 +7,68 @@ use App\Models\Product;
 use App\Models\DiscountCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class ShoppingCartController extends Controller
 {
+    // Methode om de winkelwagen te tonen
     public function index()
     {
         $user = Auth::user();
-        // Pas de "cart-item" include file aan zodat de "$product->pivot->quantity" in de formuliervalue ingevuld wordt
-        // en de size ook met "$product->pivot->size" afgedrukt wordt.
-        $cartItems = $user->cart()->withPivot('quantity', 'size')->get();
-        // Zorg ervoor dat je de juiste velden bij de relatie in het User model meegeeft (zie documentatie)
-        // https://laravel.com/docs/9.x/eloquent-relationships#retrieving-intermediate-table-columns
-        // Zorg ook dat de prijs berekening in het "cart-item" klopt.
 
+        // Producten in de winkelwagen van de gebruiker ophalen met de hoeveelheid en maat
+        $cartItems = $user->cart()->withPivot('quantity', 'size')->get();
         $subtotal = 0;
+
+        // Bereken de subtotaalprijs van de producten in de winkelwagen
         foreach ($cartItems as $cartItem) {
             $subtotal += $cartItem->price * $cartItem->pivot->quantity;
         }
-        // Zoek de producten van de ingelogde gebruiker op.
-        $products = $user->cart()->get();
 
+        // Verzendkosten instellen
         $shipping = 3.9;
-        // DOE DE BEREKENING ALS LAATSTE STAP
-        // Gebruik de "products" relatie op het user model (en gegevens de pivot table) om de producten te overlopen
-        // en de volledige prijs van de winkelkar te berekenen.
 
-        // Bereken de verzendkosten van 3.9eur bij het totaal
+        // Totaalprijs berekenen inclusief verzendkosten
         $total = $subtotal + $shipping;
 
-        // BONUS: Als de kortingscode bestaat in de sessie, zoek deze op in de databank en pas de korting toe op de berekening.
-        // De kortingscode kan je dan ook naar de view hieronder doorsturen.
-        // In de index view hieronder kan je dan ook het stukje in commentaar code tonen met de juiste gegegevens.
-        // Indien er al een code ingevuld is zet je de input in de discount-code view file op "disabled"
+        // Kortingscode en korting initialiseren
+        $discountCode = Session::get('discount_code');
         $discountAmount = 0;
-        $discountCode = false;
 
         return view('cart.index', [
-            'products' => $products,
+            'products' => $cartItems,
             'shipping' => $shipping,
             'subtotal' => $subtotal,
             'total' => $total,
-
             'discountCode' => $discountCode,
             'discountAmount' => $discountAmount
         ]);
     }
 
-
+    // Methode om een product aan de winkelwagen toe te voegen
     public function add(Request $request, Product $product)
     {
-        // Haal de ingelogde gebruiker op
         $user = Auth::user();
 
-        // Zoek het item in de winkelwagen van de gebruiker
+        // Zoek of het product al in de winkelwagen van de gebruiker zit
         $existingCartItem = $user->cart()->where('product_id', $product->id)->where('size', $request->input('size'))->first();
 
-        // Als het item al in de winkelwagen zit, verhoog de hoeveelheid
+        // Als het product al in de winkelwagen zit, verhoog de hoeveelheid
         if ($existingCartItem) {
             $existingCartItem->pivot->quantity += $request->input('quantity', 1);
             $existingCartItem->pivot->save();
         } else {
             // Voeg het product toe aan de winkelwagen van de gebruiker
             $user->cart()->attach($product, [
-                'quantity' => $request->input('quantity', 1), // standaard 1 als hoeveelheid niet opgegeven is
-                'size' => $request->input('size', 'Medium'), // standaard 'Medium' als maat niet opgegeven is
+                'quantity' => $request->input('quantity', 1),
+                'size' => $request->input('size', 'Medium')
             ]);
         }
 
         return redirect()->route('cart');
     }
 
-
+    // Methode om een product uit de winkelwagen te verwijderen
     public function delete(Product $product)
     {
         $user = Auth::user();
@@ -87,41 +78,46 @@ class ShoppingCartController extends Controller
         return redirect()->route('cart');
     }
 
+    // Methode om de hoeveelheid van een product in de winkelwagen bij te werken
     public function update(Request $request, Product $product)
     {
         $user = Auth::user();
 
-        // Update de gegevens van het product in de winkelwagen van de gebruiker
+        // Update de hoeveelheid van het product in de winkelwagen van de gebruiker
         $user->cart()->updateExistingPivot($product->id, [
-            'quantity' => $request->input('quantity', old('quantity')),
+            'quantity' => $request->input('quantity', 1)
         ]);
 
         return redirect()->route('cart');
     }
 
-
-    /**
-     * BONUS: DISCOUNTS
-     */
-
+    // Methode om een kortingscode toe te passen
     public function setDiscountCode(Request $request)
     {
-        // Valideer het formulier (veld is verplicht) en vul het terug in bij foutmeldingen
+        // Valideer het formulier
+        $request->validate([
+            'discount_code' => 'required|string|max:255',
+        ]);
 
-        // BONUS
-        // Zoek de discount code in de databank op die het CODE veld uit de request
-        // Als de discount code gevonden werd:
-        // Save de discount code naar de sessie zodat je deze later kan gebruiken bij checkout
-        // https://laravel.com/docs/9.x/session#storing-data
+        // Zoek de kortingscode in de database
+        $discountCode = DiscountCode::where('code', $request->discount_code)->first();
+
+        if ($discountCode) {
+            // Kortingscode gevonden, sla op in de sessie
+            Session::put('discount_code', $discountCode->code);
+        } else {
+            // Kortingscode niet gevonden, toon een foutmelding
+            return back()->with('error', 'Kortingscode niet geldig.');
+        }
+
         return redirect()->route('cart');
-
-        // Als de discount code niet gevonden werd: ga terug met een foutmelding dat de code niet gevonden kon worden
-
     }
 
+    // Methode om een kortingscode te verwijderen
     public function removeDiscountCode()
     {
-        // Verwijder de discount code uit de sessie
+        // Verwijder de kortingscode uit de sessie
+        Session::forget('discount_code');
 
         return back();
     }

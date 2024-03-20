@@ -2,67 +2,83 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrdersController extends Controller
 {
+
     public function checkout()
     {
         return view('orders.checkout');
     }
 
+
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            // Voeg hier de validatie regels toe voor de verzendinformatie
+            'voornaam' => 'required',
+            'achtername' => 'required',
+            'straat' => 'required',
+            'huisnummer' => 'required',
+            'postcode' => 'required',
+            'woonplaats' => 'required',
+        ]);
 
-        $request->validate([]);
-        // Valideer het formulier zodat alle velden verplicht zijn.
-        // Vul het formulier terug in, en toon de foutmeldingen.
+        // Maak een nieuw order aan en vul het met de verzendinformatie uit het gevalideerde request
+        $order = new Order();
+        // Koppel het order aan de ingelogde gebruiker
+        $order->user_id = Auth::id();
+        // Voeg andere order informatie toe indien nodig
+        $order->voornaam = $request->voornaam;
+        $order->achtername = $request->achtername;
+        $order->straat = $request->straat;
+        $order->huisnummer = $request->huisnummer;
+        $order->postcode = $request->postcode;
+        $order->woonplaats = $request->woonplaats;
+        $order->save();
 
-        // Maak een nieuw "order" met de gegevens uit het formulier in de databank
-        // Zorg ervoor dat hett order gekoppeld is aan de ingelogde gebruiker.
 
         // Zoek alle producten op die gekoppeld zijn aan de ingelogde gebruiker (shopping cart)
-        // Overloop alle gekoppelde producten van een user (shopping cart)
-        // Attach het product, met bijhorende quantity en size, aan het order
-        // https://laravel.com/docs/9.x/eloquent-relationships#retrieving-intermediate-table-columns
-        // Detach tegelijk het product van de ingelogde gebruiker zodat de shopping cart terug leeg wordt
+        $userProducts = Auth::user()->cart()->withPivot('quantity', 'size')->get();
 
-        // BONUS: Als er een discount code in de sessie zit koppel je deze aan het discount_code_id in het order model
-        // Verwijder nadien ook de discount code uit de sessie
+        // Loop door alle producten in de winkelwagen van de gebruiker
+        foreach ($userProducts as $product) {
+            // Voeg het product toe aan het order met de bijbehorende quantity en size
+            $order->products()->attach($product->id, [
+                'quantity' => $product->pivot->quantity,
+                'size' => $product->pivot->size
+            ]);
+            // Verwijder het product uit de winkelwagen van de gebruiker
+            Auth::user()->cart()->detach($product->id);
+        }
 
-
-        // BONUS: Stuur een e-mail naar de gebruiker met de melding dat zijn bestelling gelukt is,
-        // samen met een knop of link naar de show pagina van het order
-
-
-        // Redirect naar de show pagina van het order en pas de functie daar aan
-        return redirect()->route('orders.show', 1);
+        // Redirect naar de show pagina van het order
+        return redirect()->route('orders.show', $order->id);
     }
-
     public function index()
     {
-        // Zoek alle orders van de ingelogde gebruiker op. Vervang de "range" hieronder met de juiste code
-        $orders = range(0, 1);
+        // Zoek alle orders van de ingelogde gebruiker op
+        $orders = Auth::user()->orders;
 
-        // Pas de views aan zodat de juiste info van een order getoond word in de "order" include file
         return view('orders.index', [
             'orders' => $orders
         ]);
     }
 
-    public function show()
-    { // Order $order
-        // Beveilig het order met een GATE zodat je enkel jouw eigen orders kunt bekijken.
+    public function show(Order $order)
+    {
+        // Beveilig het order met een GATE zodat je enkel jouw eigen orders kunt bekijken
 
-        // In de URL wordt het id van een order verstuurd. Zoek het order uit de url op.
-        // Zoek de bijbehorende producten van het order hieronder op.
-        $products = Product::take(4)->get();
+        // Zoek de bijbehorende producten van het order
+        $products = $order->products()->withPivot('size')->get();
 
-        // Geef de juiste data door aan de view
-        // Pas de "order-item" include file aan zodat de gegevens van het order juist getoond worden in de website
+
         return view('orders.show', [
-            // 'order' => $order,
+            'order' => $order,
             'products' => $products
         ]);
     }
