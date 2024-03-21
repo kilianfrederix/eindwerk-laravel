@@ -39,8 +39,6 @@
                 <div>
                     <h1 class="text-4xl font-semibold mb-2">Mijn bestellingen</h1>
                     <p class="text-gray-500">{{ Auth::user()->orders()->count() }} bestellingen</p>
-                    {{-- dit is de juiste manier maar heb de model en migration nog niet gedaan --}}
-                    {{-- {{ Auth::user()->orders()->count() }}  --}}
                 </div>
                 <div class="text-4xl">
                     <i class="fa-solid fa-angle-right"></i>
