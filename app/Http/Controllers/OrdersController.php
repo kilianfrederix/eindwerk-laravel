@@ -28,9 +28,9 @@ class OrdersController extends Controller
             'woonplaats' => 'required',
         ]);
 
-        // Maak een nieuw order aan en vul het met de verzendinformatie uit het gevalideerde request
+        // Maak een nieuw order aan
         $order = new Order();
-        // Koppel het order aan de ingelogde gebruiker
+        // Koppel de bestelling aan de ingelogde gebruiker
         $order->user_id = Auth::id();
         // Voeg andere order informatie toe indien nodig
         $order->voornaam = $request->voornaam;

@@ -11,9 +11,12 @@
     </div>
 
     <div class="">
-        <h1 class="text-2xl font-semibold mb-4">Bestelling van 14 May 2020</h1>
-        <p class="text-gray-500 text-lg">{{ $products->count() }} producten</p>
-
+        <h1 class="text-2xl font-semibold mb-4">Bestelling van {{ $order->created_at->format('d F Y') }}</h1>
+        @if ($products->count() === 1)
+            <p class="text-gray-500 text-lg">{{ $products->count() }} product</p>
+        @else
+            <p class="text-gray-500 text-lg">{{ $products->count() }} producten</p>
+        @endif
         {{-- Indien kortingscode gekoppeld aan het order --}}
         {{-- <p class="my-8">
             <span class="font-semibold">Kortingscode:</span>
