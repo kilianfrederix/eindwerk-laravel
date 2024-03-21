@@ -7,8 +7,11 @@
         <div class="col-span-3 grid gap-4 content-start">
             <div class="bg-white p-4">
                 <h1 class="text-2xl font-semibold">Shopping cart</h1>
+                @if( $products->count() === 1 )
+                <p class="text-gray-500 text-lg">{{ $products->count() }} product</p>
+                @else
                 <p class="text-gray-500 text-lg">{{ $products->count() }} producten</p>
-
+                @endif
                 <div class="grid gap-4 mt-4">
                     @foreach ($products as $product)
                         @include('cart.includes.cart-item', ['product' => $product])

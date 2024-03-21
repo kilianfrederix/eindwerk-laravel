@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id');
             $table->string('voornaam');
-            $table->string('achtername');
+            $table->string('achternaam');
             $table->string('straat');
             $table->string('huisnummer');
             $table->string('postcode');

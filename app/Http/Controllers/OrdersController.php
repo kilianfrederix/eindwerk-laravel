@@ -21,7 +21,7 @@ class OrdersController extends Controller
         $validated = $request->validate([
             // Voeg hier de validatie regels toe voor de verzendinformatie
             'voornaam' => 'required',
-            'achtername' => 'required',
+            'achternaam' => 'required',
             'straat' => 'required',
             'huisnummer' => 'required',
             'postcode' => 'required',
@@ -34,7 +34,7 @@ class OrdersController extends Controller
         $order->user_id = Auth::id();
         // Voeg andere order informatie toe indien nodig
         $order->voornaam = $request->voornaam;
-        $order->achtername = $request->achtername;
+        $order->achternaam = $request->achternaam;
         $order->straat = $request->straat;
         $order->huisnummer = $request->huisnummer;
         $order->postcode = $request->postcode;
